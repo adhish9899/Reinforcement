@@ -1,5 +1,4 @@
 
-
 '''
 import gym
 
@@ -18,7 +17,7 @@ obs = next_state
 
 import gym
 
-env = gym.make("Qbert-v0")
+env = gym.make("Alien-v0")
 
 MAX_NUM_EPISODES = 10
 MAX_STEPS_PER_EPISODE = 500
@@ -36,7 +35,5 @@ for episode in range(MAX_NUM_EPISODES):
         if done is True:
             print("\n Episode #{} ended in {} step.".format(episode,step + 1))
             break
-        
-
 
 
