@@ -1,8 +1,7 @@
 
-### GRID WORLD EXAMPLE (SUTTON AND BARTO)
+### GRID WORLD EXAMPLE MDP (SUTTON AND BARTO)
 
 import numpy as np
-import ipdb
 
 # Grid Size
 grid = np.zeros((5,5))
