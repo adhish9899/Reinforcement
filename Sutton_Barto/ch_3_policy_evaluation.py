@@ -151,7 +151,6 @@ def jacks_car_rental():
 
     # An up bound for poisson distribution
     # If n is greater than this value, then the probability of getting n is truncated to 0
-
     poisson_upper_bound = 11
 
     value = np.zeros((max_cars + 1, max_cars + 1))
@@ -161,7 +160,7 @@ def jacks_car_rental():
     _, axes = plt.subplots(2, 3, figsize=(40, 20))
     plt.subplots_adjust(wspace=0.1, hspace=0.2)
     axes = axes.flatten()
-    
+
     while True:
         fig = sns.heatmap(np.flipud(policy), cmap="YlGnBu", ax=axes[iterations])
         fig.set_ylabel('# cars at first location', fontsize=30)
@@ -169,7 +168,7 @@ def jacks_car_rental():
         fig.set_xlabel('# cars at second location', fontsize=30)
         fig.set_title('policy {}'.format(iterations), fontsize=30)
 
-        # Policy evaluation
+        # Policy evaluation (no actions used)
         while True:
             old_value = value.copy()
             for i in range(max_cars + 1):
@@ -245,7 +244,7 @@ def expected_return(state, action, state_value, move_car_cost, max_cars, poisson
 
     # moving cars
     num_cars_first_loc = min(state[0] - action, max_cars)
-    num_cars_second_loc = min(state[1] - action, max_cars)
+    num_cars_second_loc = min(state[1] + action, max_cars)
 
     # go through all possible rental requests
     for rental_request_first_loc_ in range(poisson_upper_bound):
