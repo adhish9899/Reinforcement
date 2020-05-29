@@ -153,6 +153,9 @@ def jacks_car_rental():
     # If n is greater than this value, then the probability of getting n is truncated to 0
     poisson_upper_bound = 11
 
+    # if not solving 4.5, keep it 0 else 4 
+    additional_parking_cost = 4
+
     value = np.zeros((max_cars + 1, max_cars + 1))
     policy = np.zeros(value.shape, dtype=np.int)
 
@@ -175,7 +178,7 @@ def jacks_car_rental():
                 for j in range(max_cars + 1):
                     new_state_value = expected_return([i,j], policy[i,j], value, move_car_cost, max_cars, poisson_upper_bound, \
                                                       gamma, rental_credits, rental_request_first_loc, rental_request_second_loc,
-                                                      returns_first_loc, returns_second_loc)
+                                                      returns_first_loc, returns_second_loc, additional_parking_cost)
                     value[i, j] = new_state_value
 
             max_value_change = abs(old_value - value).max()
@@ -192,7 +195,7 @@ def jacks_car_rental():
                     if (0 <= action <= i) or (-j <= action <= 0):
                         action_returns.append(expected_return([i,j], action, value, move_car_cost, max_cars, poisson_upper_bound, \
                                                                 gamma, rental_credits, rental_request_first_loc, rental_request_second_loc,
-                                                                returns_first_loc, returns_second_loc))
+                                                                returns_first_loc, returns_second_loc, additional_parking_cost))
                     
                     else:
                         action_returns.append(-np.inf)
@@ -229,7 +232,7 @@ def poisson_probability(n, lam):
     return poisson_cache[key]
 
 def expected_return(state, action, state_value, move_car_cost, max_cars, poisson_upper_bound, gamma, rental_credits,
-                    rental_request_first_loc, rental_request_second_loc, returns_first_loc, returns_second_loc):
+                    rental_request_first_loc, rental_request_second_loc, returns_first_loc, returns_second_loc, additional_parking_cost):
     """
     @states : [# of cars in first location, # of cars in second location]
     @action : positive if moving cars from first location to second location,
@@ -260,6 +263,12 @@ def expected_return(state, action, state_value, move_car_cost, max_cars, poisson
 
             # Get credits for renting
             reward = (valid_rental_first_loc + valid_rental_second_loc) * rental_credits
+
+            if num_cars_first_loc > 10:
+                reward -= additional_parking_cost
+
+            if num_cars_second_loc > 10:
+                reward -= additional_parking_cost 
             
             num_of_cars_first_loc_ = num_cars_first_loc - valid_rental_first_loc
             num_of_cars_second_loc_ = num_cars_second_loc - valid_rental_second_loc
