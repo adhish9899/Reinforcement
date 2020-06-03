@@ -4,6 +4,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
+import ipdb
 
 ## Actions: hit or stand/stick
 action_hit = 0
@@ -32,7 +33,7 @@ for i in range(12,22):
 # Get a new card
 def get_card():
     card = np.random.randint(1,14)
-    card = min(1, 10)
+    card = min(card, 10)
     return card
 
 # Get the value of a card (11 for ace)
@@ -79,8 +80,17 @@ def play(policy_player, intial_state = None, inital_aciton = None):
             else:
                 # It is an "or" condition, usable_ace_player = (usable_ace_player or (1 == card))
                 usable_ace_player |= (1 == card)
+        
+        # Initializing the dealers cards and suppose the dealer will show the fist card he gets
+        dealer_card1 = get_card()
+        dealer_card2 = get_card()
+    
+    else:
+        # specified inital_state
+        usable_ace_player, player_sum, dealer_card1 = intial_state
+        dealer_card2 = get_card()
 
-    ## inital state of the game
+        ## inital state of the game
     state = [usable_ace_player, player_sum, dealer_card1]
 
     # Initialize dealer's sum
@@ -108,7 +118,7 @@ def play(policy_player, intial_state = None, inital_aciton = None):
             action = policy_player(usable_ace_player, player_sum, dealer_card1)
 
         # track players trajectory for importance sampling
-        player_trajectory.append([usable_ace_player, player_sum, dealer_card1])
+        player_trajectory.append([(usable_ace_player, player_sum, dealer_card1), action])
 
         if action == action_stand:
             break
@@ -177,7 +187,7 @@ def play(policy_player, intial_state = None, inital_aciton = None):
     else:
         return state, 0, player_trajectory
         
-        
+# On policy sampling
 def monte_carlo_on_policy(episodes):
 
     states_usuable_aces = np.zeros((10, 10))
@@ -210,7 +220,10 @@ def monte_carlo_on_policy(episodes):
 
 def figure_5_1():
 
+    ipdb.set_trace()
     states_usable_ace_1, states_no_usable_ace_1 = monte_carlo_on_policy(10000)
+
+    ipdb.set_trace()
     states_usable_ace_2, states_no_usable_ace_2 = monte_carlo_on_policy(500000)
 
     states = [states_usable_ace_1, states_usable_ace_2,
@@ -227,7 +240,7 @@ def figure_5_1():
 
     for states, title, axis in zip(states, titles, axes):
         fig = sns.heatmap(np.flipud(states),  cmap="YlGnBu", ax=axis, xticklabels=range(1, 11),
-                          yticklabels=list(reversed(range(12, 22)))))
+                          yticklabels=list(reversed(range(12, 22))))
         
         fig.set_ylabel('player sum', fontsize=30)
         fig.set_xlabel('dealer showing', fontsize=30)
