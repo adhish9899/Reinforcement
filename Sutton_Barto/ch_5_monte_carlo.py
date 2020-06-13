@@ -269,10 +269,8 @@ def monte_carlo_es(episodes):
 
 def figure_5_1():
 
-    ipdb.set_trace()
     states_usable_ace_1, states_no_usable_ace_1 = monte_carlo_on_policy(10000)
 
-    ipdb.set_trace()
     states_usable_ace_2, states_no_usable_ace_2 = monte_carlo_on_policy(500000)
 
     states = [states_usable_ace_1, states_usable_ace_2,
@@ -301,7 +299,6 @@ def figure_5_1():
 
 def figure_5_2():
 
-    ipdb.set_trace()
     state_action_values = monte_carlo_es(500000)
 
     state_value_no_usable_ace = np.max(state_action_values[:, :, 0, :], axis=-1)
