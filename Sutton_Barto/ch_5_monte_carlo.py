@@ -27,7 +27,7 @@ policy_dealer = np.zeros(22, dtype=np.int)
 for i in range(12,17):
     policy_dealer[i] = action_hit
 
-for i in range(12,22):
+for i in range(17,22):
     policy_dealer[i] = action_stand
 
 # Get a new card
@@ -269,7 +269,7 @@ def monte_carlo_es(episodes):
 
 def figure_5_1():
 
-    states_usable_ace_1, states_no_usable_ace_1 = monte_carlo_on_policy(10000)
+    states_usable_ace_1, states_no_usable_ace_1 = monte_carlo_on_policy(500000)
 
     states_usable_ace_2, states_no_usable_ace_2 = monte_carlo_on_policy(500000)
 
@@ -336,7 +336,6 @@ def figure_5_2():
 
     
 if __name__ == "__main__":
-    # figure_5_1()
-    figure_5_2()
+    figure_5_1()
+    # figure_5_2()
 
-    
