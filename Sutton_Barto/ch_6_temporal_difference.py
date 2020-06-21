@@ -68,7 +68,7 @@ def choose_action(state, q_value):
     
     else:
         values_ = q_value[state[0], state[1], :]
-        return np.random.choice([action_ for action_, value_  in enumerate(values_) if values_ == np.max(values_)])
+        return np.random.choice([action_ for action_, value  in enumerate(values_) if value == np.max(values_)])
 
 # an episode with SARSA
 # @q_value: values for state, action pair will be upgraded
@@ -106,7 +106,7 @@ def sarsa(q_value, expected=False, step_size=ALPHA):
         target *= GAMMA
 
         #Updating current state action values
-        q_value[state[0], state[1], action] += step_size( reward + target - q_value[state[0], state[1], action])
+        q_value[state[0], state[1], action] += step_size * (reward + target - q_value[state[0], state[1], action])
 
         state = next_state
         action = next_action
@@ -181,7 +181,8 @@ def figure_6_4():
     rewards_sarsa = np.zeros(episodes)
     rewards_q_learning = np.zeros(episodes)
 
-    for _ in range(runs):
+    for r in range(runs):
+        print(r)
         q_sarsa = np.zeros((WORLD_HEIGHT, WORLD_WIDTH, 4))
         q_q_learning = np.copy(q_sarsa)
 
@@ -210,6 +211,59 @@ def figure_6_4():
     print_optimal_policy(q_q_learning)
 
 
+# ACTUAL EXPEIMENT IS WITH 100,000 EPISODES AND 50,000 RUNS TO GET THE FULLY AVERAGED PERFORMANCE
+def figure_6_6():
+    step_sizes = np.arange(0.1, 1.1, 0.1)
+    epidoes = 1000
+    runs = 10
+
+    ASY_SARSA = 0
+    ASY_EXPECTED_SARSA = 1
+    ASY_QLEARNING = 2
+    INT_SARSA = 3
+    INT_EXPECTED_SARSA = 4
+    INT_QLEARNING = 5
+    
+    methods = range(0,6)
+
+    performances = np.zeros((6, len(step_sizes)))
+    for run in range(runs):
+        for ind, step_size in list(zip(range(0, len(step_sizes)), step_sizes)):
+
+            q_sarsa = np.zeros((WORLD_HEIGHT, WORLD_WIDTH, 4))
+            q_expected_sarsa = np.copy(q_sarsa)
+            q_q_learning = np.copy(q_sarsa)
+
+            for ep in range(epidoes):
+                sarsa_reward = sarsa(q_sarsa, expected=False, step_size=step_size)
+                sarsa_expected_reward = sarsa(q_expected_sarsa, expected=True, step_size=step_size)
+                q_learning_reward = q_learning(q_q_learning, step_size=step_size)
+
+                performances[ASY_SARSA, ind] += sarsa_reward
+                performances[ASY_EXPECTED_SARSA, ind] += sarsa_expected_reward
+                performances[ASY_QLEARNING, ind] += q_learning_reward
+
+                if ep < 100:
+                    performances[INT_SARSA, ind] += sarsa_reward
+                    performances[INT_EXPECTED_SARSA, ind] += sarsa_expected_reward
+                    performances[INT_QLEARNING, ind] += q_learning_reward
+    
+    performances[:3, :] /= epidoes * runs
+    performances[3:, :] /= 100 * runs
+    labels = ['Asymptotic Sarsa', 'Asymptotic Expected Sarsa', 'Asymptotic Q-Learning',
+              'Interim Sarsa', 'Interim Expected Sarsa', 'Interim Q-Learning']
+
+    for method, label in zip(methods, labels):
+        plt.plot(step_sizes, performances[method, :], label=label)
+    
+    plt.xlabel('alpha')
+    plt.ylabel('reward per episode')
+    plt.legend()
+
+    plt.savefig('../images/figure_6_6.png')
+    plt.close()
 
 
-
+if __name__ == "__main__":
+    figure_6_4()
+    figure_6_6()
