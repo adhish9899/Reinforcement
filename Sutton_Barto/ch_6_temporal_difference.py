@@ -167,7 +167,47 @@ def print_optimal_policy(q_value):
         print(row)
 
 
-# Use multiple runs 
+# Use multiple runs instead of a single run and a sliding window
+# However the optimal policy converges wll with a single path
+# SARSA converges to the safe path, while Q-learning converges to the optimal path
+def figure_6_4():
+    
+    # Episodes for each run
+    episodes = 500
+
+    # Independent run
+    runs = 50
+
+    rewards_sarsa = np.zeros(episodes)
+    rewards_q_learning = np.zeros(episodes)
+
+    for _ in range(runs):
+        q_sarsa = np.zeros((WORLD_HEIGHT, WORLD_WIDTH, 4))
+        q_q_learning = np.copy(q_sarsa)
+
+        for i in range(episodes):
+            rewards_sarsa[i] += sarsa(q_sarsa)
+            rewards_q_learning[i] += q_learning(q_q_learning)
+    
+    # Averaging over independent runs
+    rewards_sarsa /= runs
+    rewards_q_learning /= runs
+
+    plt.plot(rewards_sarsa, label="SARSA")
+    plt.plot(rewards_q_learning, label="Q-LEARNING")
+    plt.xlabel("Episodes")
+    plt.ylabel("Sum of rewards during episode")
+    plt.ylim([-100,0])
+    plt.legend()
+
+    plt.savefig("figure_6_4.png")
+    plt.close("all")
+
+    # Display optimal policy
+    print("SARSA OPTIMAL POLICY")
+    print_optimal_policy(q_sarsa)
+    print("Q-LEARNING OPTIMAL POLICY")
+    print_optimal_policy(q_q_learning)
 
 
 
