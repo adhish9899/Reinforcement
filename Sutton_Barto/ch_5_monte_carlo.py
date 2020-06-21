@@ -27,7 +27,7 @@ policy_dealer = np.zeros(22, dtype=np.int)
 for i in range(12,17):
     policy_dealer[i] = action_hit
 
-for i in range(12,22):
+for i in range(17,22):
     policy_dealer[i] = action_stand
 
 # Get a new card
@@ -235,7 +235,7 @@ def monte_carlo_es(episodes):
         #get argmax of the average returns (s,a)
         values_ = state_action_values[player_sum, dealer_card, usable_ace, :] / state_action_count[player_sum, dealer_card, usable_ace, :]
 
-        return np.random.choice([actions_ for actions_, value_ in enumerate(values_) if values_ == np.max(values_)])
+        return np.random.choice([actions_ for actions_, value in enumerate(values_) if value == np.max(values_)])
     
     for episode in range(episodes):
 
@@ -265,14 +265,12 @@ def monte_carlo_es(episodes):
             state_action_values[player_sum, dealer_card, usable_ace, action] += reward
             state_action_count[player_sum, dealer_card, usable_ace, action] += 1
         
-        return state_action_values/state_action_count
+    return state_action_values/state_action_count
 
 def figure_5_1():
 
-    ipdb.set_trace()
-    states_usable_ace_1, states_no_usable_ace_1 = monte_carlo_on_policy(10000)
+    states_usable_ace_1, states_no_usable_ace_1 = monte_carlo_on_policy(500000)
 
-    ipdb.set_trace()
     states_usable_ace_2, states_no_usable_ace_2 = monte_carlo_on_policy(500000)
 
     states = [states_usable_ace_1, states_usable_ace_2,
@@ -301,15 +299,14 @@ def figure_5_1():
 
 def figure_5_2():
 
-    ipdb.set_trace()
     state_action_values = monte_carlo_es(500000)
 
     state_value_no_usable_ace = np.max(state_action_values[:, :, 0, :], axis=-1)
     state_value_usable_ace = np.max(state_action_values[:, :, 1, :], axis=-1)
 
     # get the optimal policy
-    action_no_usable_ace = np.argmax(state_action_values[:, :, 0, :])
-    action_usable_ace = np.argmax(state_action_values[:, :, 1, :])
+    action_no_usable_ace = np.argmax(state_action_values[:, :, 0, :], axis=-1)
+    action_usable_ace = np.argmax(state_action_values[:, :, 1, :], axis=-1)
 
     images = [action_usable_ace,
               state_value_usable_ace,
@@ -339,7 +336,6 @@ def figure_5_2():
 
     
 if __name__ == "__main__":
-    # figure_5_1()
-    figure_5_2()
+    figure_5_1()
+    # figure_5_2()
 
-    
